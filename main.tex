@@ -1,0 +1,148 @@
+%
+% This is the LaTeX template file for lecture notes for CS294-8,
+% Computational Biology for Computer Scientists.  When preparing 
+% LaTeX notes for this class, please use this template.
+%
+% To familiarize yourself with this template, the body contains
+% some examples of its use.  Look them over.  Then you can
+% run LaTeX on this file.  After you have LaTeXed this file then
+% you can look over the result either by printing it out with
+% dvips or using xdvi.
+%
+% This template is based on the template for Prof. Sinclair's CS 270.
+
+\documentclass[11pt, twosides]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{graphics}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{xcolor}
+\setlength{\oddsidemargin}{0.25 in}
+\setlength{\evensidemargin}{-0.25 in}
+\setlength{\topmargin}{-0.6 in}
+\setlength{\textwidth}{6.5 in}
+\setlength{\textheight}{8.5 in}
+\setlength{\headsep}{0.75 in}
+\setlength{\parindent}{0 in}
+\setlength{\parskip}{0.1 in}
+
+%
+% The following commands set up the lecnum (lecture number)
+% counter and make various numbering schemes work relative
+% to the lecture number.
+%
+\newcounter{lecnum}
+\renewcommand{\thepage}{\thelecnum-\arabic{page}}
+\renewcommand{\thesection}{\thelecnum.\arabic{section}}
+\renewcommand{\theequation}{\thelecnum.\arabic{equation}}
+\renewcommand{\thefigure}{\thelecnum.\arabic{figure}}
+\renewcommand{\thetable}{\thelecnum.\arabic{table}}
+
+%
+% The following macro is used to generate the header.
+%
+\newcommand{\lecture}[4]{
+%   \pagestyle{myheadings}
+   \thispagestyle{plain}
+   \newpage
+   \setcounter{lecnum}{#1}
+   \setcounter{page}{1}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf CS 419M Introduction to Machine Learning
+                        \hfill Spring 2021-22} }
+       \vspace{4mm}
+       \hbox to 6.28in { {\Large \hfill Lecture #1: #2  \hfill} }
+       \vspace{2mm}
+       \hbox to 6.28in { {\it Lecturer: #3 \hfill Scribe: #4} }
+      \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{Lecture #1: #2}{Lecture #1: #2}
+}
+
+%
+% Convention for citations is authors' initials followed by the year.
+% For example, to cite a paper by Leighton and Maggs you would type
+% \cite{LM89}, and to cite a paper by Strassen you would type \cite{S69}.
+% (To avoid bibliography problems, for now we redefine the \cite command.)
+% Also commands that create a suitable format for the reference list.
+% \renewcommand{\cite}[1]{[#1]}
+% \def\beginrefs{\begin{list}%
+%         {[\arabic{equation}]}{\usecounter{equation}
+%          \setlength{\leftmargin}{2.0truecm}\setlength{\labelsep}{0.4truecm}%
+%          \setlength{\labelwidth}{1.6truecm}}}
+% \def\endrefs{\end{list}}
+% \def\bibentry#1{\item[\hbox{[#1]}]}
+
+%Use this command for a figure; it puts a figure in wherever you want it.
+%usage: \fig{NUMBER}{SPACE-IN-INCHES}{CAPTION}
+% \newcommand{\fig}[3]{
+% 			\vspace{#2}
+% 			\begin{center}
+% 			Figure \thelecnum.#1:~#3
+% 			\end{center}
+% 	}
+% Use these for theorems, lemmas, proofs, etc.
+\newtheorem{theorem}{Theorem}[lecnum]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+% \newenvironment{proof}{{\bf Proof:}}{\hfill\rule{2mm}{2mm}}
+
+% **** IF YOU WANT TO DEFINE ADDITIONAL MACROS FOR YOURSELF, PUT THEM HERE:
+
+\begin{document}
+%FILL IN THE RIGHT INFO.
+%\lecture{**LECTURE-NUMBER**}{**DATE**}{**LECTURER**}{**SCRIBE**}
+\lecture{2}{Loss Functions}{Abir De}{Parin Senta}
+%\lecture{x}{Title}{Abir De}{Group y}
+
+
+
+\section{What conditions/things can be relaxed so that the above optimisation problem can be solved by a normal computer?}
+We had formulated the above problem on the assumption that we have "Oracle", a computer that can solve any problem (for which a solution exists) within a millisecond. However that's not practically possible. Hence certain conditions need to be relaxed.
+\subsection{Restricting type of \textbf{h(x)}}
+So far, all types of h(x) were considered for optimisation i.e there was no  restriction on the nature of h(x). However for simplification, we only consider linear h(x). For the time being we do not think about if this simplification provides a minimum solution. So, h(x) takes the form $W^TX$ and hence the optimisation problem reduces to
+\begin{equation}
+    \min_{W} \sum{I\left(\frac{1 + sign(W^TX)}{2}\neq y\right)}
+\end{equation}
+
+\subsection{Replacing Indicator function by Modulus}
+It is difficult for a normal computer to optimise with the Indicator function, hence replacing it with modulus is another restriction imposed in the problem.
+\begin{equation}
+    \min_{W} \sum{\left|\frac{1 + sign(W^TX)}{2}- y\right|}
+\end{equation}
+
+\subsection{Making the Loss Function Differentiable}
+In order for us to apply various calculus ideas, its better to have a differentiable function. Since sign(x) is not differentiable , we simply get rid of it. To take care of modulus, we square the terms of summation. In the end, we have the foloowing loss function:
+\begin{equation}
+    \min_{W} \sum{\left(\frac{1 + W^TX}{2}- y\right)^2}
+\end{equation}
+
+\subsection{Limiting the Bounds of $W^TX$}
+There is a problem with the previous restriction. Consider the case when y=1 and $W^TX$ = 10. Since $W^TX$ is positive it should be classified as 1. However its contribution to the overall loss function is high.(should be zero for a properly chosen loss function). This is due to the fact that $W^TX$ is unbounded. To take care of this we give $W^TX$ as an input to sigmoid function which is bound between 0 and 1. Sigmoid function is defined by $S(x) = \frac{1}{1 + e^-x}$.
+\begin{equation}
+    \min_{W} \sum{\left(S(W^TX)- y\right)^2}
+\end{equation}
+
+
+
+
+
+\section{Group Details and Individual Contribution}
+% Fill this part
+\end{document}
+
+
+
+
+
+
